@@ -18,7 +18,7 @@ class StoreSurveyRequest extends FormRequest
 
     public function prepareForValidation()
     {
-        $this->merge = ([
+        $this->merge([
             'user_id' => $this->user()->id
         ]);
     }

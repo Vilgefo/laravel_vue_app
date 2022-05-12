@@ -3,11 +3,33 @@
         <template v-slot:header>
             <div class="flex justify-between items-center">
                 <h1 class="text-3xl font-bold text-gray-900">
-                    {{ model.id ? model.title : 'Create a Survey' }}
+                    {{ route.params.id ? model.title : 'Create a Survey' }}
                 </h1>
+                <button
+                    v-if="route.params.id"
+                    type="button"
+                    @click="deleteSurvey()"
+                    class="py-2 px-3 text-white bg-red-500 rounded-md hover:bg-red-600"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 -mt-1 inline-block"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path
+                            fill-rule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clip-rule="evenodd"
+                        />
+                    </svg>
+                    Delete Survey
+                </button>
             </div>
+
         </template>
-        <form action="#" method="POST">
+        <div v-if="surveyLoading" class="flex justify-center">Loading...</div>
+        <form v-else @submit.prevent="saveSurvey">
             <div class="shadow sm:rounded-md sm:overflow-hidden">
                 <!-- Survey Fields -->
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
@@ -18,36 +40,33 @@
                         </label>
                         <div class="mt-1 flex items-center">
                             <img
-                                v-if="model.image"
-                                :src="model.image"
+                                v-if="model.image_url"
+                                :src="model.image_url"
                                 :alt="model.title"
                                 class="w-64 h-48 object-cover"
                             >
                             <span v-else
-                                  class="
-                        flex
-                        items-center
-                        justify-center
-                        h-12
-                        w-12
-                        rounded-full
-                        overflow-hidden
-                        bg-gray-100
-                      "
-                            >
-                      <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="h-[80%] w-[80%] text-gray-300"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                      >
-                        <path
-                            fill-rule="evenodd"
-                            d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                            clip-rule="evenodd"
-                        />
-                      </svg>
-                    </span>
+                              class="flex
+                                items-center
+                                justify-center
+                                h-12
+                                w-12
+                                rounded-full
+                                overflow-hidden
+                                bg-gray-100">
+                              <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  class="h-[80%] w-[80%] text-gray-300"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                              >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                                    clip-rule="evenodd"
+                                />
+                              </svg>
+                            </span>
                             <button
                                 type="button"
                                 class="
@@ -73,6 +92,7 @@
                             >
                                 <input
                                     type="file"
+                                    @change="onImageChoose"
                                     class="
                           absolute
                           left-0
@@ -251,10 +271,9 @@
 <script setup>
 import PageComponent from "../components/PageComponent.vue";
 import QuestionEditor from "../components/editor/QuestionEditor.vue";
-import {ref} from "vue";
+import {ref, watch, computed} from "vue";
 import store from "../store";
-import {useRouter} from "vue-router";
-import {useRoute} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import {v4 as uuidv4} from "uuid";
 
 const router = useRouter();
@@ -265,14 +284,35 @@ let model = ref({
     status: false,
     description: null,
     image: null,
+    image_url: null,
     expire_date: null,
     questions: []
 })
 
+// Get survey loading state, which only changes when we fetch survey from backend
+const surveyLoading = computed(() => store.state.currentSurvey.loading);
+
 if (route.params.id) {
-    model.value = store.state.surveys.find(
-        (s) => s.id === parseInt(route.params.id)
-    )
+    store.dispatch('getSurvey', route.params.id)
+}
+watch(
+    () => store.state.currentSurvey.data,
+    (newVal, oldVal) => {
+        model.value = {
+            ...JSON.parse(JSON.stringify(newVal)),
+            status: !!newVal.status,
+        };
+    }
+);
+
+function onImageChoose(ev) {
+    const file = ev.target.files[0];
+    const reader = new FileReader();
+    reader.onload = ()=>{
+        model.value.image = reader.result
+        model.value.image_url = reader.result
+    }
+    reader.readAsDataURL(file);
 }
 
 function addQuestion(index) {
@@ -290,12 +330,32 @@ function deleteQuestion(question) {
     model.value.questions = model.value.questions.filter(q => q !== question)
 }
 
-function changeQuestion(question){
-    model.value.questions = model.value.questions.map((q)=>{
-        if(q.id === question.id){
+function changeQuestion(question) {
+    model.value.questions = model.value.questions.map((q) => {
+        if (q.id === question.id) {
             return JSON.parse(JSON.stringify(question))
         }
         return q
     });
+}
+
+function saveSurvey() {
+    store.dispatch('saveSurvey', model.value).then(({data}) => {
+        router.push({name: 'SurveyView', params: {id: data.data.id}})
+    })
+}
+
+function deleteSurvey() {
+    if (
+        confirm(
+            `Are you sure you want to delete this survey? Operation can't be undone!!`
+        )
+    ) {
+        store.dispatch("deleteSurvey", model.value.id).then(() => {
+            router.push({
+                name: "Surveys",
+            });
+        });
+    }
 }
 </script>
