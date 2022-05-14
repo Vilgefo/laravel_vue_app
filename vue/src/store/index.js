@@ -14,7 +14,8 @@ const store = createStore({
         },
         surveys: {
             loading: false,
-            data: []
+            data: [],
+            links: [],
         },
         questionTypes: ['text', 'select', 'radio', 'checkbox', 'textarea'],
         notification: {
@@ -99,6 +100,7 @@ const store = createStore({
             state.currentSurvey.data = survey.data;
         },
         setSurveys: (state, surveys)=>{
+            state.surveys.links = surveys.meta.links;
             state.surveys.data = surveys.data
         },
         logout: state => {
