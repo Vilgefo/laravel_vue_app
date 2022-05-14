@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use Fruitcake\Cors\HandleCors;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -30,6 +31,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
+            HandleCors::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,

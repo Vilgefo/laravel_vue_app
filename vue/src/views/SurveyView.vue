@@ -29,7 +29,7 @@
 
         </template>
         <div v-if="surveyLoading" class="flex justify-center">Loading...</div>
-        <form v-else @submit.prevent="saveSurvey">
+        <form v-else @submit.prevent="saveSurvey" class="animate-fade-in-down">
             <div class="shadow sm:rounded-md sm:overflow-hidden">
                 <!-- Survey Fields -->
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
@@ -223,7 +223,31 @@
                 <!--/ Survey Fields -->
 
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
-                    <h3 class="text-2xl font-semibold">Questions</h3>
+                    <h3 class="text-2xl font-semibold flex items-center justify-between">
+                        Questions
+
+                        <!-- Add new question -->
+                        <button
+                            type="button"
+                            @click="addQuestion()"
+                            class="flex items-center text-sm py-1 px-4 rounded-sm text-white bg-gray-600 hover:bg-gray-700"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                            Add Question
+                        </button>
+                        <!--/ Add new question -->
+                    </h3>
                     <div v-if="!model.questions || !model.questions.length" class="text-center text-gray-600">
                         You don't have any questions created
                     </div>
@@ -231,7 +255,7 @@
                         <QuestionEditor
                             :question="question"
                             :index="index"
-                            @change="change"
+                            @change="changeQuestion"
                             @addQuestion="addQuestion"
                             @deleteQuestion="deleteQuestion"
                         />
@@ -317,7 +341,7 @@ function onImageChoose(ev) {
 
 function addQuestion(index) {
     const newQuestion = {
-        id: uuidv4,
+        id: uuidv4(),
         type: 'text',
         question: '',
         description: '',
@@ -341,6 +365,7 @@ function changeQuestion(question) {
 
 function saveSurvey() {
     store.dispatch('saveSurvey', model.value).then(({data}) => {
+        store.commit('notify', {type: 'success', message: 'Successfully updated'})
         router.push({name: 'SurveyView', params: {id: data.data.id}})
     })
 }

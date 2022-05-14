@@ -16,7 +16,12 @@ const store = createStore({
             loading: false,
             data: []
         },
-        questionTypes: ['text', 'select', 'radio', 'checkbox', 'textarea']
+        questionTypes: ['text', 'select', 'radio', 'checkbox', 'textarea'],
+        notification: {
+            show: false,
+            type: 'success',
+            message: ''
+        }
     },
     getters: {},
     actions: {
@@ -84,6 +89,9 @@ const store = createStore({
         },
     },
     mutations: {
+        setSurveysLoading: (state, loading) => {
+              state.surveys.loading = loading
+        },
         setCurrentSurveyLoading: (state, loading) => {
             state.currentSurvey.loading = loading;
         },
@@ -103,7 +111,15 @@ const store = createStore({
             state.user.data = userData.user;
             console.log(userData, state.user);
             sessionStorage.setItem('TOKEN', userData.token)
-        }
+        },
+        notify: (state, {message, type}) => {
+            state.notification.show = true;
+            state.notification.type = type;
+            state.notification.message = message;
+            setTimeout(() => {
+                state.notification.show = false;
+            }, 3000)
+        },
     }, modules: {}
 })
 

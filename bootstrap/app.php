@@ -10,7 +10,6 @@
 | the IoC container for the system binding all of the various parts.
 |
 */
-
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
@@ -51,5 +50,4 @@ $app->singleton(
 | from the actual running of the application and sending responses.
 |
 */
-
 return $app;

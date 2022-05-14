@@ -17,3 +17,5 @@ Homestead.json
 Homestead.yaml
 .vscode
 ./public/images
+/storage/clockwork
+/public/images
