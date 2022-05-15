@@ -72,7 +72,6 @@ class SurveyController extends Controller
     public function storeAnswer(StoreSurveyAnswerRequest $request, Survey $survey)
     {
         $validated = $request->validated();
-//        var_dump($validated, $survey);
 
         $surveyAnswer = SurveyAnswer::create([
             'survey_id' => $survey->id,
@@ -202,7 +201,6 @@ class SurveyController extends Controller
      * @param $data
      * @return mixed
      * @throws \Illuminate\Validation\ValidationException
-     * @author Zura Sekhniashvili <zurasekhniashvili@gmail.com>
      */
     private function createQuestion($data)
     {
