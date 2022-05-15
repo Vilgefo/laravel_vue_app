@@ -9,12 +9,12 @@ use Mockery\Exception;
 class LoginComponent
 {
     /**
-     * @param array $registerData
+     * @param array $credential
      * @return array
      */
     public function login(array $credential): array
     {
-        [$email, $password] = $credential;
+        ['email' => $email, 'password' => $password] = $credential;
         $remember = $credential['remember'] ?? false;
         unset($credential['remember']);
 

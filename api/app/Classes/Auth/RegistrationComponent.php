@@ -13,7 +13,7 @@ class RegistrationComponent
      */
     public function register(array $registerData): array
     {
-        [$name, $email, $password] = $registerData;
+        ['name' => $name, 'email' => $email, 'password' => $password] = $registerData;
         $user = User::create([
             'name' => $name,
             'email' => $email,

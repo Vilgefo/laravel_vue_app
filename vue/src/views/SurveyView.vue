@@ -3,7 +3,7 @@
         <template v-slot:header>
             <div class="flex justify-between items-center">
                 <h1 class="text-3xl font-bold text-gray-900">
-                    {{ route.params.id ? model.title : 'Create a Survey' }}
+                    {{ route.params.id ? model.title : 'Create a SurveyManager' }}
                 </h1>
                 <button
                     v-if="route.params.id"
@@ -31,7 +31,7 @@
         <div v-if="surveyLoading" class="flex justify-center">Loading...</div>
         <form v-else @submit.prevent="saveSurvey" class="animate-fade-in-down">
             <div class="shadow sm:rounded-md sm:overflow-hidden">
-                <!-- Survey Fields -->
+                <!-- SurveyManager Fields -->
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                     <!-- Image -->
                     <div>
@@ -220,7 +220,7 @@
                     </div>
                     <!--/ Status -->
                 </div>
-                <!--/ Survey Fields -->
+                <!--/ SurveyManager Fields -->
 
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                     <h3 class="text-2xl font-semibold flex items-center justify-between">

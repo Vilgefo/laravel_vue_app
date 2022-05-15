@@ -35,7 +35,7 @@ class AuthController extends Controller
              */
             $loginResult = (new LoginComponent())->login($credential);
         } catch (Exception $e) {
-            return response(['error' => $e->getMessage()], $e->getCode());
+            return response(['message' => $e->getMessage()], $e->getCode());
         }
         return response($loginResult);
     }
