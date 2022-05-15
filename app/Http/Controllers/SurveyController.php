@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSurveyAnswerRequest;
 use App\Http\Requests\StoreSurveyRequest;
 use App\Http\Requests\UpdateSurveyRequest;
 use App\Models\Survey;
+use App\Models\SurveyAnswer;
 use App\Models\SurveyQuestion;
+use App\Models\SurveyQuestionAnswer;
 use Illuminate\Http\Request;
 use App\Http\Resources\SurveyResource;
 use Illuminate\Support\Arr;
@@ -63,6 +66,55 @@ class SurveyController extends Controller
         if ($user->id !== $survey->user_id) {
             return abort(403, 'Unauthorized action');
         }
+        return new SurveyResource($survey);
+    }
+
+    public function storeAnswer(StoreSurveyAnswerRequest $request, Survey $survey)
+    {
+        $validated = $request->validated();
+//        var_dump($validated, $survey);
+
+        $surveyAnswer = SurveyAnswer::create([
+            'survey_id' => $survey->id,
+            'start_date' => date('Y-m-d H:i:s'),
+            'end_date' => date('Y-m-d H:i:s'),
+        ]);
+
+        foreach ($validated['answers'] as $questionId => $answer) {
+            $question = SurveyQuestion::where(['id' => $questionId, 'survey_id' => $survey->id])->get();
+            if (!$question) {
+                return response("Invalid question ID: \"$questionId\"", 400);
+            }
+
+            $data = [
+                'survey_question_id' => $questionId,
+                'survey_answer_id' => $surveyAnswer->id,
+                'answer' => is_array($answer) ? json_encode($answer) : $answer
+            ];
+
+            $questionAnswer = SurveyQuestionAnswer::create($data);
+        }
+
+        return response("", 201);
+
+    }
+    /**
+     * @param Survey $survey
+     * @return SurveyResource|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Exception
+     */
+    public function showForGuest(Survey $survey)
+    {
+//        if (!$survey->status) {
+//            return response("", 404);
+//        }
+//
+//        $currentDate = new \DateTime();
+//        $expireDate = new \DateTime($survey->expire_date);
+//        if ($currentDate > $expireDate) {
+//            return response("", 404);
+//        }
+
         return new SurveyResource($survey);
     }
 

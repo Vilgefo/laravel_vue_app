@@ -9,6 +9,16 @@
       </p>
     </div>
     <form class="mt-8 space-y-6" @submit='register'>
+        <Alert
+            v-if="Object.keys(errors).length"
+            class="flex-col items-stretch text-sm"
+        >
+            <div v-for="(field, i) of Object.keys(errors)" :key="i">
+                <div v-for="(error, ind) of errors[field] || []" :key="ind">
+                    * {{ error }}
+                </div>
+            </div>
+        </Alert>
       <div class="rounded-md shadow-sm -space-y-px">
         <div>
           <label for="fullname" class="sr-only">Email address</label>
@@ -28,21 +38,24 @@
           </div>
       </div>
 
-      <div>
-        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <LockClosedIcon class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
-          </span>
-          Sign up
-        </button>
-      </div>
+        <div>
+            <TButtonLoading
+                :loading="loading"
+                class="w-full relative justify-center"
+            >
+                Sign up
+            </TButtonLoading>
+        </div>
     </form>
 </template>
 
 <script setup>
 import { LockClosedIcon } from '@heroicons/vue/solid'
 import store from "../store";
+import {ref} from "vue";
 import {useRouter} from "vue-router";
+import Alert from "../components/Alert.vue";
+import TButtonLoading from '../components/core/TButtonLoading.vue'
 
 const router = useRouter();
 const user = {
@@ -51,14 +64,22 @@ const user = {
     password: '',
     password_confirmation: ''
 }
-
+const loading = ref(false);
+const errors = ref({});
 function register(ev){
     ev.preventDefault()
+    loading.value = true;
     store.dispatch('register', user).then(()=>{
+        loading.value = false;
         router.push({
             name: 'Dashboard'
         })
-    })
+    }).catch((error) => {
+        loading.value = false;
+        if (error.response.status === 422) {
+            errors.value = error.response.data.errors;
+        }
+    });
 }
 </script>
 

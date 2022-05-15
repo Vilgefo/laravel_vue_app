@@ -8,6 +8,10 @@ const store = createStore({
             token: sessionStorage.getItem('TOKEN'),
 
         },
+        dashboard: {
+            loading: false,
+            data: {}
+        },
         currentSurvey: {
             loading: false,
             data: {}
@@ -26,6 +30,34 @@ const store = createStore({
     },
     getters: {},
     actions: {
+        getDashboardData({commit}) {
+            commit('dashboardLoading', true)
+            return axiosClient.get(`/dashboard`)
+                .then((res) => {
+                    commit('dashboardLoading', false)
+                    commit('setDashboardData', res.data)
+                    return res;
+                })
+                .catch(error => {
+                    commit('dashboardLoading', false)
+                    return error;
+                })
+
+        },
+        getSurveyBySlug({ commit }, slug) {
+            commit("setCurrentSurveyLoading", true);
+            return axiosClient
+                .get(`/survey-by-slug/${slug}`)
+                .then((res) => {
+                    commit("setCurrentSurvey", res.data);
+                    commit("setCurrentSurveyLoading", false);
+                    return res;
+                })
+                .catch((err) => {
+                    commit("setCurrentSurveyLoading", false);
+                    throw err;
+                });
+        },
         getSurveys({ commit }, {url = null} = {}) {
             commit('setSurveysLoading', true)
             url = url || "/survey";
@@ -49,6 +81,7 @@ const store = createStore({
                     throw err;
                 });
         },
+
         register({commit}, user) {
             return axiosClient.post('/register', user).then(({data}) => {
                 commit('setUser', data)
@@ -88,6 +121,9 @@ const store = createStore({
                 return res;
             });
         },
+        saveSurveyAnswer({commit}, {surveyId, answers}) {
+            return axiosClient.post(`/survey/${surveyId}/answer`, {answers});
+        },
     },
     mutations: {
         setSurveysLoading: (state, loading) => {
@@ -121,6 +157,12 @@ const store = createStore({
             setTimeout(() => {
                 state.notification.show = false;
             }, 3000)
+        },
+        dashboardLoading: (state, loading) => {
+            state.dashboard.loading = loading;
+        },
+        setDashboardData: (state, data) => {
+            state.dashboard.data = data
         },
     }, modules: {}
 })
