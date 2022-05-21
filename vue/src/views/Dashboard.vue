@@ -62,7 +62,7 @@
                             Edit Survey
                         </TButton>
 
-                        <TButton link>
+                        <TButton link @click="viewAnswer">
                             <EyeIcon class="w-5 h-5 mr-2" />
                             View Answers
                         </TButton>
@@ -78,8 +78,8 @@
                         <h3 class="text-2xl font-semibold">Latest Answers</h3>
 
                         <a
-                            href="javascript:void(0)"
-                            class="text-sm text-blue-500 hover:decoration-blue-500"
+                            @click.prevent="viewAnswer"
+                            class="text-sm text-blue-500 hover:decoration-blue-500 cursor-pointer"
                         >
                             View all
                         </a>
@@ -119,4 +119,9 @@ const store = useStore();
 const loading = computed(() => store.state.dashboard.loading);
 const data = computed(() => store.state.dashboard.data);
 store.dispatch("getDashboardData");
+
+function viewAnswer()
+{
+  store.commit('notify', {type: 'error', message: "Answers page haven't done yet"})
+}
 </script>

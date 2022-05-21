@@ -1,7 +1,4 @@
 <template>
-    <pre>
-        {{answers}}
-    </pre>
     <div class="py-5 px-8">
         <div v-if="loading" class="flex justify-center">Loading...</div>
         <form @submit.prevent="submitSurvey" v-else class="container mx-auto">
@@ -47,13 +44,17 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import QuestionViewer from "../components/viewer/QuestionViewer.vue";
+
 const route = useRoute();
 const store = useStore();
+
 const loading = computed(() => store.state.currentSurvey.loading);
 const survey = computed(() => store.state.currentSurvey.data);
 const surveyFinished = ref(false);
 const answers = ref({});
+
 store.dispatch("getSurveyBySlug", route.params.slug);
+
 function submitSurvey() {
     store
         .dispatch("saveSurveyAnswer", {
@@ -66,6 +67,7 @@ function submitSurvey() {
             }
         });
 }
+
 function submitAnotherResponse() {
     answers.value = {};
     surveyFinished.value = false;

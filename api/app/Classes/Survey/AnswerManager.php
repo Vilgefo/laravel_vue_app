@@ -28,7 +28,7 @@ class AnswerManager
             if (!$question) {
                 Throw new Exception("Invalid question ID: \"$questionId\"", 400);
             }
-
+            clock($questionId);
             $data = [
                 'survey_question_id' => $questionId,
                 'survey_answer_id' => $surveyAnswer->id,

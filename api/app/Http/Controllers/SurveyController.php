@@ -113,7 +113,7 @@ class SurveyController extends Controller
 
         $answerManager = new AnswerManager();
         try {
-            $answerManager->addAnswer($survey, $validated);
+            $answerManager->addAnswer($survey, $validated['answers']);
         } catch (Exception $e) {
             return response($e->getMessage(), $e->getCode());
         }

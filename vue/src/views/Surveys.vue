@@ -23,7 +23,7 @@
                             :survey="survey"
                             @delete="deleteSurvey(survey)"/>
         </div>
-        <div class="flex justify-center mt-5">
+        <div v-if="surveys.data.length" class="flex justify-center mt-5">
             <nav
                 class="relative z-0 inline-flex justify-center rounded-md shadow-sm -space-x-px"
                 aria-label="Pagination"

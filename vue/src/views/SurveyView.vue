@@ -367,6 +367,8 @@ function saveSurvey() {
     store.dispatch('saveSurvey', model.value).then(({data}) => {
         store.commit('notify', {type: 'success', message: 'Successfully updated'})
         router.push({name: 'SurveyView', params: {id: data.data.id}})
+    }).catch(err=>{
+      store.commit('notify', {type: 'error', message: err.message})
     })
 }
 

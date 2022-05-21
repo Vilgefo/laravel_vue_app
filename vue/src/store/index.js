@@ -101,6 +101,7 @@ const store = createStore({
             })
         },
         saveSurvey({commit}, survey) {
+            survey = JSON.parse(JSON.stringify(survey));
             delete survey.image_url
             let response
             if (survey.id) {

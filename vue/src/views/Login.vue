@@ -108,7 +108,7 @@ function login(ev) {
         })
     }).catch(err => {
         loading.value = false
-        errorMsg.value = err.response.data.message;
+        errorMsg.value = err.message;
     })
 }
 </script>

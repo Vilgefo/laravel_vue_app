@@ -5,7 +5,7 @@
     <router-link v-else-if="props.to" :to="props.to" :class="classes">
         <slot></slot>
     </router-link>
-    <button v-else :class="classes">
+    <button @click="$emit('click')" v-else :class="classes">
         <slot></slot>
     </button>
 </template>
@@ -29,6 +29,9 @@ const props = defineProps({
         default: false,
     },
 });
+
+const emits = defineEmits(['click'])
+
 let classes = ref([
     "flex",
     "text-sm",
