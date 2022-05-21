@@ -14,14 +14,13 @@ class FileComponent
      */
     public static function saveImage(string $image): string
     {
-        // Check if image is valid base64 string
         if (preg_match('/^data:image\/(\w+);base64,/', $image, $type)) {
             // Take out the base64 encoded text without mime type
             $image = substr($image, strpos($image, ',') + 1);
+
             // Get file extension
             $type = strtolower($type[1]); // jpg, png, gif
 
-            // Check if file is an image
             if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
                 throw new Exception('invalid image type');
             }

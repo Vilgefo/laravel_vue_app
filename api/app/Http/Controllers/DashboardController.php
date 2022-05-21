@@ -15,19 +15,15 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        // Total Number of Surveys
-        $total = Survey::query()->where('user_id', $user->id)->count();
+        $total = Survey::where('user_id', $user->id)->count();
 
-        // Latest SurveyManager
         $latest = Survey::query()->where('user_id', $user->id)->latest('created_at')->first();
 
-        // Total Number of answers
         $totalAnswers = SurveyAnswer::query()
             ->join('surveys', 'survey_answers.survey_id', '=', 'surveys.id')
             ->where('surveys.user_id', $user->id)
             ->count();
 
-        // Latest 5 answer
         $latestAnswers = SurveyAnswer::query()
             ->join('surveys', 'survey_answers.survey_id', '=', 'surveys.id')
             ->where('surveys.user_id', $user->id)

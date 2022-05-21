@@ -1,0 +1,34 @@
+version: '3.5'
+
+services:
+  backend:
+    build:
+      context: './api'
+    volumes:
+      - ./api/public:/var/www/html
+      - ./api/:/var/www/
+    environment:
+      tz: 'Europe/Moscow'
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    links:
+      - mysql
+  frontend:
+    build:
+      context: './vue'
+    volumes:
+      - ./vue:/var/www/
+    environment:
+      tz: 'Europe/Moscow'
+    ports:
+      - "8081:80"
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: surveys
+      TZ: Europe/Moscow
