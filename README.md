@@ -8,9 +8,5 @@ on this survey</p>
 
 install
 
-- cd ./vue
-- npm run dev
-- cd ../api
 - docker-compose up -d
-- wait 10 seconds
-- go to localhost:3000
+- go to http://localhost:8081/
