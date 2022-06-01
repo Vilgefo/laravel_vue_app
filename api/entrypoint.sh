@@ -8,4 +8,5 @@ while [ $ISNOTALIVE == 1 ]; do
     mysqladmin ping  -h "mysql" -uroot -proot --silent; ISNOTALIVE=$?;
     done
 php artisan migrate:fresh;
+php artisan key:generate
 apache2-foreground
